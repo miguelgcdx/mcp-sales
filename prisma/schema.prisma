@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  UNQUALIFIED
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  employees     Int
+  annualRevenue Int
+
+  leads Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  estimatedBudget Int
+  need            String
+  status          LeadStatus @default(NEW)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
